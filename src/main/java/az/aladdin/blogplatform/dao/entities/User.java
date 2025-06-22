@@ -3,11 +3,9 @@ package az.aladdin.blogplatform.dao.entities;
 import az.aladdin.blogplatform.model.enums.Role;
 import az.aladdin.blogplatform.model.enums.Status;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -16,7 +14,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
+@EqualsAndHashCode
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,7 +28,7 @@ public class User {
     @Column(unique = true, nullable = false, length = 12)
     private String id;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "user_name")
     private String userName;
 
     @Column(name = "first_name", nullable = false, length = 17)
@@ -53,7 +53,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Status status;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
     @JoinTable(
             name = "follows",
             joinColumns = @JoinColumn(name = "follower_id"),
@@ -61,7 +63,9 @@ public class User {
     )
     private Set<User> following = new HashSet<>();
 
-    @ManyToMany(mappedBy = "following")
+    @ManyToMany(fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
+    @JsonIgnore
     private Set<User> followers = new HashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

@@ -8,4 +8,6 @@ public interface UserService {
     UserResponseDto createUser(UserDto userDto);
 
     User findUserById(String id);
+
+    void deleteUser(String userId);
 }
