@@ -29,7 +29,7 @@ public class UserMapper {
     }
 
     public List<UserFollowResponseDto> mapToFollowResponseDto(List<User> users) {
-        return users.stream().map(this::followResponse).toList();
+        return users.stream().map(this::mapToFollowResponseDto).toList();
     }
 }
 

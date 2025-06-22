@@ -39,6 +39,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(FileSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleException(FileSizeExceededException ex, WebRequest request) {
+        return buildErrorResponse(ex.getMessage(), HttpStatus.PAYLOAD_TOO_LARGE, request);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleException(Exception ex, WebRequest request) {
         return buildErrorResponse(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR, request);

@@ -12,7 +12,8 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     boolean existsUserByEmail(String email);
 
-    Optional<User> findByUserName(String userName);
+    @Query("SELECT u FROM User u WHERE u.userName = :userName")
+    Optional<User> findUserByUserName(@Param("userName") String userName);
 
     Optional<User> findByEmail(String email);
 
@@ -23,5 +24,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT COUNT(f) FROM User u JOIN u.following f WHERE u.id = :userId")
     long countFollowingByUserId(@Param("userId") String userId);
+
+
+
+
 
 }

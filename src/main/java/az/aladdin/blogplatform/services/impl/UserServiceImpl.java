@@ -2,11 +2,14 @@ package az.aladdin.blogplatform.services.impl;
 
 import az.aladdin.blogplatform.configuration.mappers.UserMapper;
 import az.aladdin.blogplatform.dao.entities.User;
+import az.aladdin.blogplatform.dao.entities.UserProfile;
+import az.aladdin.blogplatform.dao.repository.UserProfileRepository;
 import az.aladdin.blogplatform.dao.repository.UserRepository;
 import az.aladdin.blogplatform.exception.ResourceAlreadyExistException;
 import az.aladdin.blogplatform.exception.ResourceNotFoundException;
 import az.aladdin.blogplatform.model.dto.request.UserDto;
 import az.aladdin.blogplatform.model.dto.response.UserResponseDto;
+import az.aladdin.blogplatform.model.enums.Gender;
 import az.aladdin.blogplatform.services.abstraction.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,12 +24,19 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final UserMapper userMapper;
+    private final UserProfileRepository userProfileRepository;
 
     @Override
     public UserResponseDto createUser(UserDto userDto) {
         existsUserByEmail(userDto.getEmail());
         User user = modelMapper.map(userDto, User.class);
         User savedUser = userRepository.save(user);
+
+
+        userProfileRepository.save(UserProfile.builder()
+                .gender(Gender.I_PREFER_NOT_TO_SPECIFY)
+                .user(user)
+                .build());
         return userMapper.toResponse(savedUser);
     }
 
@@ -43,5 +53,22 @@ public class UserServiceImpl implements UserService {
             log.error("User not found with ID: {}", id);
             return new ResourceNotFoundException("User not found");
         });
+    }
+
+    public void deleteUser(String userId) {
+        User user = findUserById(userId);
+
+        for (User follower : user.getFollowers()) {
+            follower.getFollowing().remove(user);
+        }
+
+        for (User following : user.getFollowing()) {
+            following.getFollowers().remove(user);
+        }
+
+        user.getFollowers().clear();
+        user.getFollowing().clear();
+
+        userRepository.deleteById(userId);
     }
 }
