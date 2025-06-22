@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class UserFollowStatsDto {
+    private String userId;
     private long followersCount;
     private long followingCount;
 
