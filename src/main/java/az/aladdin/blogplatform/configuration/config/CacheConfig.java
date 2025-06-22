@@ -17,7 +17,8 @@ public class CacheConfig {
                 "categories",
                 "categoryType",
                 "post",
-                "comments");
+                "comments",
+                "userProfile");
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(60, TimeUnit.MINUTES)
                 .maximumSize(1000)
