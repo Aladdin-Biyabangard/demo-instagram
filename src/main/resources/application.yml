@@ -2,6 +2,12 @@ spring:
   application:
     name: blog-platform
 
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 1000MB
+      max-request-size: 1000MB
+
   datasource:
     url: jdbc:postgresql://localhost:5432/blog_platform
     username: postgres
@@ -33,6 +39,13 @@ application:
                 BasicBinder: TRACE
       org.springframework.data.jpa.repository: DEBUG
 
-
+cloud:
+  aws:
+    region: eu-north-1
+    credentials:
+      access-key: ${ACCESS_KEY}
+      secret-key: ${SECRET_KEY}
+    s3:
+      bucket: followme21
 
 
