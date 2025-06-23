@@ -1,6 +1,6 @@
 package az.aladdin.blogplatform.model.dto.response;
 
-import az.aladdin.blogplatform.model.enums.Gender;
+import az.aladdin.blogplatform.model.enums.user.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

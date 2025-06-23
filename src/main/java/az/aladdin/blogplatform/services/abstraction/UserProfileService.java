@@ -2,7 +2,7 @@ package az.aladdin.blogplatform.services.abstraction;
 
 import az.aladdin.blogplatform.dao.entities.UserProfile;
 import az.aladdin.blogplatform.model.dto.response.UserProfileResponseDto;
-import az.aladdin.blogplatform.model.enums.Gender;
+import az.aladdin.blogplatform.model.enums.user.Gender;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;

@@ -1,6 +1,6 @@
 package az.aladdin.blogplatform.dao.entities;
 
-import az.aladdin.blogplatform.model.enums.Gender;
+import az.aladdin.blogplatform.model.enums.user.Gender;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import jakarta.persistence.*;
 import lombok.*;

@@ -1,7 +1,7 @@
 package az.aladdin.blogplatform.controller;
 
 import az.aladdin.blogplatform.model.dto.response.UserProfileResponseDto;
-import az.aladdin.blogplatform.model.enums.Gender;
+import az.aladdin.blogplatform.model.enums.user.Gender;
 import az.aladdin.blogplatform.services.abstraction.UserProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

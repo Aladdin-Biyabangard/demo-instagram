@@ -7,7 +7,7 @@ import az.aladdin.blogplatform.exception.FileSizeExceededException;
 import az.aladdin.blogplatform.exception.ResourceNotFoundException;
 import az.aladdin.blogplatform.model.dto.response.FileUploadResponse;
 import az.aladdin.blogplatform.model.dto.response.UserProfileResponseDto;
-import az.aladdin.blogplatform.model.enums.Gender;
+import az.aladdin.blogplatform.model.enums.user.Gender;
 import az.aladdin.blogplatform.services.abstraction.FileLoadService;
 import az.aladdin.blogplatform.services.abstraction.UserProfileService;
 import jakarta.transaction.Transactional;

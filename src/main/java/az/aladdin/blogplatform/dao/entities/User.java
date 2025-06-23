@@ -1,18 +1,18 @@
 package az.aladdin.blogplatform.dao.entities;
 
-import az.aladdin.blogplatform.model.enums.Role;
-import az.aladdin.blogplatform.model.enums.Status;
+import az.aladdin.blogplatform.model.enums.user.Role;
+import az.aladdin.blogplatform.model.enums.user.Status;
 import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -22,7 +22,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
 
     @Id
     @Column(unique = true, nullable = false, length = 12)
@@ -52,6 +52,9 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     private Status status;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<LoginHistory> loginHistories = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
@@ -85,18 +88,18 @@ public class User {
     }
 
 
-//    @Override
-//    public Collection<? extends GrantedAuthority> getAuthorities() {
-//        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
-//    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+    }
 
-//    @Override
-//    public String getPassword() {
-//        return password;
-//    }
-//
-//    @Override
-//    public String getUsername() {
-//        return email;
-//    }
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return email;
+    }
 }

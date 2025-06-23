@@ -1,4 +1,4 @@
-package az.aladdin.blogplatform.model.enums;
+package az.aladdin.blogplatform.model.enums.user;
 
 public enum Gender {
     MALE,

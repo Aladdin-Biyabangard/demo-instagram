@@ -10,4 +10,7 @@ public interface UserService {
     User findUserById(String id);
 
     void deleteUser(String userId);
+
+    void removeUserFromFollowersAndFollowing(User user);
 }
+

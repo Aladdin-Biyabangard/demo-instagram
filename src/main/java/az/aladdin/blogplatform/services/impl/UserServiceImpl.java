@@ -9,7 +9,7 @@ import az.aladdin.blogplatform.exception.ResourceAlreadyExistException;
 import az.aladdin.blogplatform.exception.ResourceNotFoundException;
 import az.aladdin.blogplatform.model.dto.request.UserDto;
 import az.aladdin.blogplatform.model.dto.response.UserResponseDto;
-import az.aladdin.blogplatform.model.enums.Gender;
+import az.aladdin.blogplatform.model.enums.user.Gender;
 import az.aladdin.blogplatform.services.abstraction.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +40,10 @@ public class UserServiceImpl implements UserService {
         return userMapper.toResponse(savedUser);
     }
 
+    public void blockUser(String userId, String userName) {
+        User user = findUserById(userId);
+
+    }
 
     public void existsUserByEmail(String email) {
         if (userRepository.existsUserByEmail(email)) {
@@ -58,6 +62,15 @@ public class UserServiceImpl implements UserService {
     public void deleteUser(String userId) {
         User user = findUserById(userId);
 
+        removeUserFromFollowersAndFollowing(user);
+
+        user.getFollowers().clear();
+        user.getFollowing().clear();
+
+        userRepository.deleteById(userId);
+    }
+
+    public void removeUserFromFollowersAndFollowing(User user) {
         for (User follower : user.getFollowers()) {
             follower.getFollowing().remove(user);
         }
@@ -65,10 +78,5 @@ public class UserServiceImpl implements UserService {
         for (User following : user.getFollowing()) {
             following.getFollowers().remove(user);
         }
-
-        user.getFollowers().clear();
-        user.getFollowing().clear();
-
-        userRepository.deleteById(userId);
     }
 }
