@@ -48,4 +48,6 @@ cloud:
     s3:
       bucket: followme21
 
-
+frontend:
+  url1: ${FRONTEND_URL1}
+  url2: ${FRONTEND_URL2}
