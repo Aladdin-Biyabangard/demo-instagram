@@ -45,7 +45,7 @@ public class JwtUtil {
 
     public String createToken(User user) {
         key = initializeKey();
-        userRepository.findUserByUserName(user.getEmail()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
+        userRepository.findUserByUserName(user.getUsername()).orElseThrow(() -> new UsernameNotFoundException("USER_NOT_FOUND"));
 
         List<String> roles = user.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
 

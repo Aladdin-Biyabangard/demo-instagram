@@ -2,6 +2,18 @@ spring:
   application:
     name: blog-platform
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: aladdinbiyabangerd@gmail.com
+    password: lgwc ajdp xxjj cyuq
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
   servlet:
     multipart:
       enabled: true
@@ -38,6 +50,9 @@ application:
               sql:
                 BasicBinder: TRACE
       org.springframework.data.jpa.repository: DEBUG
+
+
+#  port: ${PORT}
 
 cloud:
   aws:

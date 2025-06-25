@@ -24,7 +24,7 @@ public class UserMapper {
     public UserFollowResponseDto mapToFollowResponseDto(User user) {
         return new UserFollowResponseDto(
                 user.getId(),
-                user.getUserName()
+                user.getUsername()
         );
     }
 

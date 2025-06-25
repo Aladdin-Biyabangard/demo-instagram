@@ -33,7 +33,7 @@ public enum AuthMapping {
     }),
 
     PERMIT_ALL(null, new String[]{
-            "/api/v1/auth/**",
+            "/api/auth/**",
             "/v2/api-docs",
             "/v3/api-docs",
             "/v3/api-docs/**",

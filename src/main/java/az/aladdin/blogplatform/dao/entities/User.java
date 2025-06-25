@@ -78,7 +78,10 @@ public class User implements UserDetails {
     private List<PostLike> postLikes = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    List<Comment> comments = new ArrayList<>();
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private UserProfile userProfile;
 
     @PrePersist
     public void generatedId() {
@@ -100,6 +103,6 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return userName;
     }
 }

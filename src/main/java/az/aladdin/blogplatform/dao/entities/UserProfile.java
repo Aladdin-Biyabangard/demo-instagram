@@ -16,7 +16,7 @@ public class UserProfile {
     @Id
     private String id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
     private User user;
 
     @Column(length = 245)
@@ -28,7 +28,7 @@ public class UserProfile {
     private String profilePhotoKey;
 
     @Enumerated(EnumType.STRING)
-    private Gender gender;
+    private Gender gender = Gender.I_PREFER_NOT_TO_SPECIFY;
 
     @PrePersist
     public void generatedId() {

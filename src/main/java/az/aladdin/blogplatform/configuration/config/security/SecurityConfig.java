@@ -56,6 +56,7 @@ public class SecurityConfig {
                         authorize ->
                                 authorize
                                         .requestMatchers(HttpMethod.GET, AuthMapping.PERMIT_ALL.getUrls()).permitAll()
+                                        .requestMatchers(HttpMethod.POST, AuthMapping.PERMIT_ALL.getUrls()).permitAll()
                                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

@@ -24,4 +24,9 @@ public interface UserRepository extends JpaRepository<User, String> {
     long countFollowingByUserId(@Param("userId") String userId);
 
 
+    boolean existsUserByUserName(String email);
+
+    Optional<User> findByEmailAndStatus(String email, Status status);
+
+    Optional<User> findByEmail(String email);
 }
