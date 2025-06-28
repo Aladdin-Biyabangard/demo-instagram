@@ -26,33 +26,55 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
     private final LoginHistoryRepository loginHistoryRepository;
     private final UserHistoryMapper userHistoryMapper;
 
+    @Override
     public void saveLoginHistory(User user, HttpServletRequest request) {
-        DeviceInfoDto deviceInfoDto = parse(request.getHeader("User-Agent"));
+        String userAgent = request.getHeader("User-Agent");
+        log.info("Saving login history for user ID: {}", user.getId());
+        log.debug("User-Agent string received: {}", userAgent);
 
-        if (!checkDeviceRegistered(user.getId(), deviceInfoDto)) {
-            log.info("Bu cihazla artiq giris var.");
-            LoginHistory loginHistory = LoginHistory.builder()
-                    .user(user)
-                    .device(deviceInfoDto.getDevice())
-                    .os(deviceInfoDto.getOs())
-                    .browser(deviceInfoDto.getBrowser())
-                    .build();
-            loginHistoryRepository.save(loginHistory);
+        DeviceInfoDto deviceInfoDto = parse(userAgent);
+
+        if (checkDeviceRegistered(user.getId(), deviceInfoDto)) {
+            log.info("User ID: {} has already logged in with this device ({} / {} / {})",
+                    user.getId(),
+                    deviceInfoDto.getDevice(),
+                    deviceInfoDto.getOs(),
+                    deviceInfoDto.getBrowser()
+            );
         }
 
+        LoginHistory loginHistory = LoginHistory.builder()
+                .user(user)
+                .device(deviceInfoDto.getDevice())
+                .os(deviceInfoDto.getOs())
+                .browser(deviceInfoDto.getBrowser())
+                .build();
+
+        loginHistoryRepository.save(loginHistory);
+        log.info("Login history saved for user ID: {}", user.getId());
     }
 
+    @Override
     public List<String> getDevicesInfo(String userId) {
+        log.info("Fetching login device info for user ID: {}", userId);
         List<LoginHistory> loginHistories = loginHistoryRepository.findByUserId(userId);
+        log.debug("Found {} login history entries for user ID: {}", loginHistories.size(), userId);
         return userHistoryMapper.response(loginHistories);
     }
 
     public boolean checkDeviceRegistered(String userId, DeviceInfoDto deviceInfoDto) {
-        return loginHistoryRepository.existsByUserIdAndBrowserAndDeviceAndOs(userId, deviceInfoDto.getBrowser(), deviceInfoDto.getDevice(), deviceInfoDto.getOs());
+        boolean exists = loginHistoryRepository.existsByUserIdAndBrowserAndDeviceAndOs(
+                userId,
+                deviceInfoDto.getBrowser(),
+                deviceInfoDto.getDevice(),
+                deviceInfoDto.getOs()
+        );
+        log.debug("Device registration check for user ID {}: {}", userId, exists);
+        return exists;
     }
 
     public static DeviceInfoDto parseUserAgent(String user) {
-
+        log.debug("Parsing user agent with ua-parser: {}", user);
         Parser parser = new Parser();
         Client client = parser.parse(user);
 
@@ -64,6 +86,12 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
     }
 
     public DeviceInfoDto parse(String userAgent) {
+        if (userAgent == null || userAgent.isBlank()) {
+            log.warn("User-Agent header is null or empty.");
+            return new DeviceInfoDto(null, null, "Unknown Device", "Unknown OS", "Unknown Browser");
+        }
+
+        log.debug("Parsing user agent with UserAgentAnalyzer: {}", userAgent);
         UserAgentAnalyzer uaa = UserAgentAnalyzer
                 .newBuilder()
                 .hideMatcherLoadStats()
@@ -77,8 +105,7 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
         String os = agent.getValue("OperatingSystemName");
         String browser = agent.getValue("AgentName");
 
-        return new DeviceInfoDto(null, null, deviceBrand, deviceName, browser);
+        log.debug("Parsed device info: brand={}, name={}, os={}, browser={}", deviceBrand, deviceName, os, browser);
+        return new DeviceInfoDto(null, null, deviceBrand, os, browser);
     }
-
-
 }

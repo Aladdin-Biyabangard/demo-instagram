@@ -18,38 +18,45 @@ import java.util.Map;
 @Slf4j
 public class EmailServiceImpl implements EmailService {
 
-
     private final JavaMailSender mailSender;
 
     @Transactional
     public void sendEmail(String receiver, EmailTemplate template, Map<String, String> placeholders) {
+        log.info("Preparing to send email to {}", receiver);
         try {
             String subject = parseSubject(template, placeholders);
             String body = parseBody(template, placeholders);
 
+            log.debug("Email subject parsed: {}", subject);
+            log.debug("Email body parsed (first 100 chars): {}", body.length() > 100 ? body.substring(0, 100) + "..." : body);
+
             MimeMessage message = prepareMessage(receiver, subject, body);
             mailSender.send(message);
 
-            log.info("Simple email sent to {}", receiver);
+            log.info("Email successfully sent to {}", receiver);
         } catch (MessagingException e) {
-            log.error("Failed to sen    d simple email: {}", e.getMessage(), e);
+            log.error("Failed to send email to {}: {}", receiver, e.getMessage(), e);
         }
     }
 
     protected MimeMessage prepareMessage(String to, String subject, String body) throws MessagingException {
+        log.debug("Preparing MimeMessage for recipient: {}", to);
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setTo(to);
         helper.setSubject(subject);
         helper.setText(body, true);
+        log.debug("MimeMessage prepared successfully for recipient: {}", to);
         return message;
     }
 
     protected String parseSubject(EmailTemplate template, Map<String, String> placeholders) {
+        log.debug("Parsing email subject template");
         return processPlaceholders(template.getSubject(), placeholders);
     }
 
     protected String parseBody(EmailTemplate template, Map<String, String> placeholders) {
+        log.debug("Parsing email body template");
         return processPlaceholders(template.getBody(), placeholders);
     }
 
@@ -60,5 +67,4 @@ public class EmailServiceImpl implements EmailService {
         }
         return text;
     }
-
 }

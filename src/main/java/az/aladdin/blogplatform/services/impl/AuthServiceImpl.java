@@ -21,8 +21,11 @@ import az.aladdin.blogplatform.services.abstraction.OtpService;
 import az.aladdin.blogplatform.utility.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,19 +37,21 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final JwtUtil jwtUtil;
-    private final RefreshTokenRepository refreshTokenRepository;
-    private final UserRepository userRepository;
-    private final AuthenticationManager authenticationManager;
-    private final UserProfileRepository userProfileRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final OtpService otpServiceImpl;
-    private final LoginHistoryService loginHistoryServiceImpl;
+    JwtUtil jwtUtil;
+    RefreshTokenRepository refreshTokenRepository;
+    UserRepository userRepository;
+    AuthenticationManager authenticationManager;
+    UserProfileRepository userProfileRepository;
+    PasswordEncoder passwordEncoder;
+    OtpService otpServiceImpl;
+    LoginHistoryService loginHistoryServiceImpl;
 
     @Transactional
+    @Async
     public AuthResponseDto login(AuthRequestDto authRequest, HttpServletRequest request) {
         log.info("Attempting to authenticate user with email: {}", authRequest.getUserName());
 
@@ -76,6 +81,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Transactional
+    @Async
     public void register(RegisterRequest request) {
         log.info("Starting registration process for username: {}", request.getUserName());
         validateUserRequest(request);
@@ -181,4 +187,5 @@ public class AuthServiceImpl implements AuthService {
         log.debug("Extracted role {} for user: {}", role, user.getUsername());
         return role;
     }
+
 }

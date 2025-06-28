@@ -42,7 +42,6 @@ public class OtpServiceImpl implements OtpService {
         }
     }
 
-
     private String generateOtp(String userName) {
         log.info("Operation of generating otp started for user {}", userName);
         SecureRandom random = new SecureRandom();

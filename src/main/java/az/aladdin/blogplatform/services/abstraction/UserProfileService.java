@@ -9,17 +9,17 @@ import java.io.IOException;
 
 public interface UserProfileService {
 
-    void updateUserProfile(String userId, MultipartFile multipartFile, String bio, Gender gender) throws IOException;
+    void updateUserProfile(MultipartFile multipartFile, String bio, Gender gender) throws IOException;
 
-    void uploadUserProfilePhoto(String userId, UserProfile userProfile, MultipartFile multipartFile) throws IOException;
+    void uploadUserProfilePhoto(UserProfile userProfile, MultipartFile multipartFile) throws IOException;
 
     void rewriteBio(UserProfile userProfile, String bio);
 
     void gender(UserProfile userProfile, Gender gender);
 
-    UserProfileResponseDto getUserProfile(String userId);
+    UserProfileResponseDto getUserProfile();
 
-    void deleteUserPhoto(String userId);
+    void deleteUserPhoto();
 
     UserProfile findUserProfileByUserId(String userId);
 }

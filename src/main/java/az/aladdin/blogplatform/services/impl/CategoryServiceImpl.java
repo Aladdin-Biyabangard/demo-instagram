@@ -24,7 +24,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
     private final PostRepository postRepository;
@@ -33,29 +32,52 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Cacheable(cacheNames = "categoryType", key = "#categoryType")
     public List<PostResponseShortDto> getCategoryByCategoryType(CategoryType categoryType) {
+        log.info("Fetching posts for category type: {}", categoryType);
         Optional<Category> category = categoryRepository.findCategoriesByCategoryType(categoryType);
-        return postMapper.toShortResponse(category.get().getPosts());
+
+        if (category.isEmpty()) {
+            log.warn("Category not found for category type: {}", categoryType);
+            throw new ResourceNotFoundException("Category not found!");
+        }
+
+        var posts = category.get().getPosts();
+        log.info("Found {} posts for category type: {}", posts.size(), categoryType);
+        return postMapper.toShortResponse(posts);
     }
 
     @Override
     public List<CategoryResponseDto> getMostPopular3Category() {
+        log.info("Fetching most popular 3 categories");
+        // Burada gələcəkdə loqika əlavə ediləcək
         return List.of();
     }
 
     @Override
     @Cacheable(cacheNames = "categories")
     public List<CategoryResponseDto> getCategories() {
+        log.info("Fetching all categories");
         var categories = categoryRepository.findAll();
+        log.info("Found {} categories", categories.size());
         return categoryMapper.toResponse(categories);
     }
 
     @Override
     public void deleteCategory(CategoryType categoryType) {
-        Category category = categoryRepository.findCategoriesByCategoryType(categoryType).stream().findFirst().
-                orElseThrow(() -> new ResourceNotFoundException("Category not found!"));
+        log.info("Deleting category with type: {}", categoryType);
+        Category category = categoryRepository.findCategoriesByCategoryType(categoryType)
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> {
+                    log.error("Category not found for type: {}", categoryType);
+                    return new ResourceNotFoundException("Category not found!");
+                });
+
         List<Post> posts = postRepository.findPostsByCategory_CategoryType(category.getCategoryType());
+        log.info("Found {} posts associated with category type {}. Removing category from posts.", posts.size(), categoryType);
+
         posts.forEach(post -> post.setCategory(null));
         postRepository.saveAll(posts);
         categoryRepository.delete(category);
+        log.info("Category {} deleted successfully", categoryType);
     }
 }

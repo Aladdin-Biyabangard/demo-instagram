@@ -25,39 +25,52 @@ public class FollowServiceImpl implements FollowService {
 
     @Transactional
     public void toggleFollow(String userId, String userName) {
+        log.info("User {} tries to toggle follow status for user '{}'", userId, userName);
         User userToFollow = userRepository.findUserByUserName(userName)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found!"));
+                .orElseThrow(() -> {
+                    log.error("User to follow '{}' not found", userName);
+                    return new ResourceNotFoundException("User not found!");
+                });
 
         User user = userServiceImpl.findUserById(userId);
 
         if (user.getFollowing().contains(userToFollow)) {
             user.getFollowing().remove(userToFollow);
             userToFollow.getFollowers().remove(user);
+            log.info("User {} unfollowed user '{}'", userId, userName);
         } else {
             user.getFollowing().add(userToFollow);
             userToFollow.getFollowers().add(user);
+            log.info("User {} followed user '{}'", userId, userName);
         }
         userRepository.save(user);
     }
 
     public List<UserFollowResponseDto> getUserFollowers(String userId) {
+        log.info("Fetching followers for user ID: {}", userId);
         User user = userServiceImpl.findUserById(userId);
-        return userMapper.mapToFollowResponseDto(List.copyOf(user.getFollowers()));
+        List<UserFollowResponseDto> followersDto = userMapper.mapToFollowResponseDto(List.copyOf(user.getFollowers()));
+        log.info("Found {} followers for user ID: {}", followersDto.size(), userId);
+        return followersDto;
     }
 
     public List<UserFollowResponseDto> getUserFollowing(String userId) {
+        log.info("Fetching following list for user ID: {}", userId);
         User user = userServiceImpl.findUserById(userId);
-        return userMapper.mapToFollowResponseDto(List.copyOf(user.getFollowing()));
+        List<UserFollowResponseDto> followingDto = userMapper.mapToFollowResponseDto(List.copyOf(user.getFollowing()));
+        log.info("User ID: {} is following {} users", userId, followingDto.size());
+        return followingDto;
     }
 
     public UserFollowStatsDto getUserFollowStats(String userId) {
+        log.info("Calculating follow stats for user ID: {}", userId);
         if (!userRepository.existsById(userId)) {
+            log.error("User not found for ID: {}", userId);
             throw new ResourceNotFoundException("User not found!");
         }
         long followers = userRepository.countFollowersByUserId(userId);
         long following = userRepository.countFollowingByUserId(userId);
+        log.info("User ID: {} has {} followers and follows {} users", userId, followers, following);
         return new UserFollowStatsDto(userId, followers, following);
     }
-
-
 }
